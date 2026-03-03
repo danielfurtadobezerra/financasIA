@@ -42,9 +42,18 @@ fun FinanciasIATheme(
 
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            val context = view.context
+            var currentContext = context
+            while (currentContext is android.content.ContextWrapper) {
+                if (currentContext is Activity) break
+                currentContext = currentContext.baseContext
+            }
+            
+            val window = (currentContext as? Activity)?.window
+            window?.let {
+                it.statusBarColor = colorScheme.background.toArgb()
+                WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = !darkTheme
+            }
         }
     }
 
