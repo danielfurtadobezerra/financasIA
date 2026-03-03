@@ -1,0 +1,19 @@
+# Gradle files to ignore
+.gradle/
+build/
+
+# Android Studio files
+.idea/
+*.iml
+local.properties
+
+# Captures and logs
+captures/
+*.log
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services
+google-services.json

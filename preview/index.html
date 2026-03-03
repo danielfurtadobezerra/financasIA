@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinançasIA - Preview</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="device-frame">
+        <div class="header">
+            <span>Olá,</span>
+            <h2>João Silva</h2>
+        </div>
+
+        <div class="summary-card">
+            <div class="label">Saldo Total</div>
+            <div class="value">R$ 4.250,80</div>
+        </div>
+
+        <div class="small-cards">
+            <div class="small-card income">
+                <div class="label">Receitas</div>
+                <div class="value">R$ 6.100,00</div>
+            </div>
+            <div class="small-card expense">
+                <div class="label">Despesas</div>
+                <div class="value">R$ 1.849,20</div>
+            </div>
+        </div>
+
+        <div class="ai-input-section">
+            <div class="ai-field">
+                <i class="fa-solid fa-sparkles" style="color: #14B8A6;"></i>
+                <input type="text" placeholder="Gastei 50 reais no iFood...">
+                <i class="fa-solid fa-microphone btn-mic"></i>
+                <i class="fa-solid fa-paper-plane btn-send"></i>
+            </div>
+            <p style="font-size: 10px; color: #94a3b8; margin-top: 8px; text-align: center;">💡 Dica: Diga algo como 'Recebi meu salário hoje'</p>
+        </div>
+
+        <div class="transaction-list">
+            <h3>Transações Recentes</h3>
+            
+            <div class="transaction-item">
+                <div class="category-icon">🍔</div>
+                <div class="item-info">
+                    <div class="title">iFood - Almoço</div>
+                    <div class="date">Hoje, 12:45</div>
+                </div>
+                <div class="item-value expense">- R$ 54,90</div>
+            </div>
+
+            <div class="transaction-item">
+                <div class="category-icon">🚗</div>
+                <div class="item-info">
+                    <div class="title">Uber</div>
+                    <div class="date">Ontem, 18:20</div>
+                </div>
+                <div class="item-value expense">- R$ 18,50</div>
+            </div>
+
+            <div class="transaction-item">
+                <div class="category-icon">💰</div>
+                <div class="item-info">
+                    <div class="title">Freelance Design</div>
+                    <div class="date">02 de Março</div>
+                </div>
+                <div class="item-value income">+ R$ 850,00</div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <i class="fa-solid fa-house nav-item active"></i>
+            <i class="fa-solid fa-receipt nav-item"></i>
+            <i class="fa-solid fa-credit-card nav-item"></i>
+            <i class="fa-solid fa-chart-pie nav-item"></i>
+            <i class="fa-solid fa-users nav-item"></i>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.btn-send').addEventListener('click', () => {
+            alert('A IA do FinançasIA está processando sua transação no backend...');
+        });
+    </script>
+</body>
+</html>
