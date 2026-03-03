@@ -159,7 +159,7 @@ fun AppNavigation() {
 
                 CardsScreen(
                     cards = cards,
-                    onAddCard = { card -> viewModel.addCard(card) }
+                    onAddCard = { /* Abrir formulário no futuro */ }
                 )
             }
             composable("reports") {
