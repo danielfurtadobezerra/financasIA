@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 import io.github.jan.supabase.functions.functions
+import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -31,7 +32,7 @@ class DashboardViewModel(private val supabase: SupabaseClient) : ViewModel() {
                 val response = supabase.functions.invoke("parse-transaction", buildJsonObject {
                     put("query", text)
                 })
-                val parsed = Json.decodeFromString<Transaction>(response.data.decodeToString())
+                val parsed = Json.decodeFromString<Transaction>(response.bodyAsText())
                 _previewTransaction.value = parsed
             } catch (e: Exception) {
                 e.printStackTrace()
