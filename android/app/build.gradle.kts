@@ -78,3 +78,9 @@ dependencies {
     // PDF Generation
     implementation("com.itextpdf:itext7-core:7.1.15")
 }
+
+configurations.all {
+    resolutionStrategy {
+        force("androidx.browser:browser:1.8.0")
+    }
+}
