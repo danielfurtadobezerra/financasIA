@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 import io.github.jan.supabase.functions.functions
+import io.github.jan.supabase.functions.decodeAs
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 

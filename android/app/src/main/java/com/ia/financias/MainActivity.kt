@@ -159,7 +159,7 @@ fun AppNavigation() {
 
                 CardsScreen(
                     cards = cards,
-                    onAddCard = { viewModel.addCard(it) }
+                    onAddCard = { card -> viewModel.addCard(card) }
                 )
             }
             composable("reports") {

@@ -8,6 +8,8 @@ import io.github.jan.supabase.auth.providers.builtin.Email
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class AuthViewModel(private val supabase: SupabaseClient) : ViewModel() {
 
@@ -54,7 +56,7 @@ class AuthViewModel(private val supabase: SupabaseClient) : ViewModel() {
                 supabase.auth.signUpWith(Email) {
                     this.email = email
                     password = pass
-                    data = buildMap {
+                    data = buildJsonObject {
                         put("full_name", name)
                     }
                 }
