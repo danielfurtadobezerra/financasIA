@@ -60,10 +60,10 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
     // Supabase
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.0.0")
-    implementation("io.github.jan-tennert.supabase:auth-kt:2.0.0")
-    implementation("io.github.jan-tennert.supabase:functions-kt:2.0.0")
-    implementation("io.github.jan-tennert.supabase:realtime-kt:2.0.0")
+    implementation("io.github.jan-tennert.supabase:postgrest:2.0.0")
+    implementation("io.github.jan-tennert.supabase:auth:2.0.0")
+    implementation("io.github.jan-tennert.supabase:functions:2.0.0")
+    implementation("io.github.jan-tennert.supabase:realtime:2.0.0")
     implementation("io.ktor:ktor-client-android:2.3.6")
 
     // Koin
