@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import java.util.Locale
@@ -30,14 +31,17 @@ fun DashboardScreen(
     income: Double,
     expenses: Double,
     transactions: List<Transaction>,
-    onSendIA: (String) -> Unit
+    previewTransaction: Transaction? = null,
+    onSendIA: (String) -> Unit,
+    onConfirmTransaction: (Transaction) -> Unit,
+    onCancelPreview: () -> Unit,
+    onLogout: () -> Unit
 ) {
     var inputText by remember { mutableStateOf("") }
-    var previewTransaction by remember { mutableStateOf<com.ia.financias.data.model.Transaction?>(null) }
 
     Scaffold(
         topBar = {
-            DashboardHeader(userName)
+            DashboardHeader(userName, onLogout)
         }
     ) { padding ->
         LazyColumn(
@@ -56,14 +60,7 @@ fun DashboardScreen(
                     text = inputText,
                     onValueChange = { inputText = it },
                     onSend = { 
-                        // Simulação de processamento de IA
-                        previewTransaction = com.ia.financias.data.model.Transaction(
-                            description = inputText,
-                            amount = 50.0,
-                            category = com.ia.financias.data.model.TransactionCategory.ALIMENTACAO,
-                            type = com.ia.financias.data.model.TransactionType.expense,
-                            date = "hoje"
-                        )
+                        onSendIA(inputText)
                         inputText = ""
                     }
                 )
@@ -72,12 +69,9 @@ fun DashboardScreen(
             if (previewTransaction != null) {
                 item {
                     PreviewTransactionCard(
-                        transaction = previewTransaction!!,
-                        onConfirm = {
-                            // Aqui salvaria no Supabase
-                            previewTransaction = null
-                        },
-                        onCancel = { previewTransaction = null }
+                        transaction = previewTransaction,
+                        onConfirm = { onConfirmTransaction(previewTransaction) },
+                        onCancel = onCancelPreview
                     )
                 }
             }
@@ -235,7 +229,7 @@ fun TransactionItem(transaction: Transaction) {
 
 @Composable
 fun PreviewTransactionCard(
-    transaction: com.ia.financias.data.model.Transaction,
+    transaction: Transaction,
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -304,7 +298,7 @@ fun PreviewTransactionCard(
 }
 
 @Composable
-fun DashboardHeader(userName: String) {
+fun DashboardHeader(userName: String, onLogout: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -316,7 +310,9 @@ fun DashboardHeader(userName: String) {
             Text("Olá,", color = Color.Gray)
             Text(userName, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         }
-        // Ícone de Perfil/Logout
+        IconButton(onClick = onLogout) {
+            Icon(Icons.Default.Logout, contentDescription = "Sair", tint = Color.Gray)
+        }
     }
 }
 

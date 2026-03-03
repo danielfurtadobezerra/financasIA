@@ -2,6 +2,7 @@ package com.ia.financias.ui.goals
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -17,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.ia.financias.ui.theme.TealPrimary
 
 @Composable
-fun GoalsScreen() {
+fun GoalsScreen(goals: List<com.ia.financias.data.model.FinancialGoal>) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { /* Nova Meta */ }, containerColor = TealPrimary) {
@@ -40,21 +41,12 @@ fun GoalsScreen() {
                 )
             }
             
-            item {
+            items(goals) { goal ->
                 GoalCard(
-                    name = "Reserva de Emergência",
-                    current = 1500.0,
-                    target = 5000.0,
-                    color = Color(0xFF22C55E)
-                )
-            }
-
-            item {
-                GoalCard(
-                    name = "Viagem de Férias",
-                    current = 800.0,
-                    target = 3000.0,
-                    color = Color(0xFF3B82F6)
+                    name = goal.name,
+                    current = goal.current_amount,
+                    target = goal.target_amount,
+                    color = goal.category?.color ?: Color(0xFF22C55E)
                 )
             }
         }

@@ -1,25 +1,29 @@
 package com.ia.financias.data.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 import androidx.compose.ui.graphics.Color
 
 @Serializable
-enum class TransactionType { income, expense }
+enum class TransactionType { 
+    @SerialName("income") income, 
+    @SerialName("expense") expense 
+}
 
 @Serializable
 enum class TransactionCategory(val label: String, val emoji: String, val colorHex: Long) {
-    ALIMENTACAO("Alimentação", "🍔", 0xFFF97316),
-    TRANSPORTE("Transporte", "🚗", 0xFF8B5CF6),
-    MORADIA("Moradia", "🏠", 0xFF06B6D4),
-    SAUDE("Saúde", "💊", 0xFFEC4899),
-    LAZER("Lazer", "🎬", 0xFFF59E0B),
-    EDUCACAO("Educação", "📚", 0xFF3B82F6),
-    VESTUARIO("Vestuário", "👕", 0xFFA855F7),
-    SERVICOS("Serviços", "🔧", 0xFF6366F1),
-    OUTROS("Outros", "📦", 0xFF64748B),
-    SALARIO("Salário", "💰", 0xFF22C55E),
-    FREELANCE("Freelance", "💼", 0xFF14B8A6),
-    INVESTIMENTOS("Investimentos", "📈", 0xFF10B981);
+    @SerialName("alimentacao") ALIMENTACAO("Alimentação", "🍔", 0xFFF97316),
+    @SerialName("transporte") TRANSPORTE("Transporte", "🚗", 0xFF8B5CF6),
+    @SerialName("moradia") MORADIA("Moradia", "🏠", 0xFF06B6D4),
+    @SerialName("saude") SAUDE("Saúde", "💊", 0xFFEC4899),
+    @SerialName("lazer") LAZER("Lazer", "🎬", 0xFFF59E0B),
+    @SerialName("educacao") EDUCACAO("Educação", "📚", 0xFF3B82F6),
+    @SerialName("vestuario") VESTUARIO("Vestuário", "👕", 0xFFA855F7),
+    @SerialName("servicos") SERVICOS("Serviços", "🔧", 0xFF6366F1),
+    @SerialName("outros") OUTROS("Outros", "📦", 0xFF64748B),
+    @SerialName("salario") SALARIO("Salário", "💰", 0xFF22C55E),
+    @SerialName("freelance") FREELANCE("Freelance", "💼", 0xFF14B8A6),
+    @SerialName("investimentos") INVESTIMENTOS("Investimentos", "📈", 0xFF10B981);
     
     val color: Color get() = Color(colorHex)
 }

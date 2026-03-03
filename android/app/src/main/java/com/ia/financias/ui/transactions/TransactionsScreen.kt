@@ -20,6 +20,7 @@ import com.ia.financias.ui.theme.TealPrimary
 
 @Composable
 fun TransactionsScreen(
+    transactions: List<Transaction>,
     onNewTransaction: () -> Unit
 ) {
     var selectedMonth by remember { mutableStateOf("Março") }
@@ -50,7 +51,7 @@ fun TransactionsScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             // Simulação de Lista
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 item {
                     Text(
                         "Resumo do Mês ($selectedMonth)",
@@ -59,9 +60,16 @@ fun TransactionsScreen(
                     )
                 }
                 
-                // Aqui iriam os dados do Supabase
-                item {
-                    Text("Nenhuma transação encontrada para este filtro.", modifier = Modifier.padding(top = 40.dp).fillMaxWidth(), color = Color.Gray)
+                if (transactions.isEmpty()) {
+                    item {
+                        Box(Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("Nenhum lançamento este mês.", color = Color.Gray)
+                        }
+                    }
+                } else {
+                    items(transactions) { transaction ->
+                        TransactionItem(transaction)
+                    }
                 }
             }
         }

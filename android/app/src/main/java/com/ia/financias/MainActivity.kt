@@ -10,19 +10,26 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
+import org.koin.androidx.compose.koinViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ia.financias.ui.auth.AuthScreen
+import com.ia.financias.ui.auth.AuthViewModel
 import com.ia.financias.ui.dashboard.DashboardScreen
+import com.ia.financias.ui.dashboard.DashboardViewModel
 import com.ia.financias.ui.cards.CardsScreen
+import com.ia.financias.ui.cards.CardsViewModel
 import com.ia.financias.ui.transactions.TransactionsScreen
 import com.ia.financias.ui.goals.GoalsScreen
+import com.ia.financias.ui.goals.GoalsViewModel
 import com.ia.financias.ui.family.FamilyScreen
 import com.ia.financias.ui.reports.ReportsScreen
 import com.ia.financias.ui.theme.FinanciasIATheme
@@ -49,6 +56,20 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
 
+    val authViewModel: AuthViewModel = koinViewModel()
+    val dashboardViewModel: DashboardViewModel = koinViewModel()
+
+    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+    
+    // Auto-navegação se já estiver logado
+    LaunchedEffect(isAuthenticated) {
+        if (isAuthenticated && currentDestination == "auth") {
+            navController.navigate("dashboard") {
+                popUpTo("auth") { inclusive = true }
+            }
+        }
+    }
+
     val items = listOf(
         NavigationItem("dashboard", "Dashboard", Icons.Default.Home),
         NavigationItem("transactions", "Transações", Icons.Default.History),
@@ -60,7 +81,7 @@ fun AppNavigation() {
 
     Scaffold(
         bottomBar = {
-            if (currentDestination != "auth") {
+            if (currentDestination != "auth" && currentDestination != null) {
                 NavigationBar {
                     items.forEach { item ->
                         NavigationBarItem(
@@ -81,36 +102,78 @@ fun AppNavigation() {
     ) { padding ->
         NavHost(
             navController = navController, 
-            startDestination = "auth",
+            startDestination = if (isAuthenticated) "dashboard" else "auth",
             modifier = Modifier.padding(padding)
         ) {
             composable("auth") {
                 AuthScreen(
-                    onLogin = { _, _ -> navController.navigate("dashboard") },
-                    onRegister = { _, _, _ -> navController.navigate("dashboard") }
+                    viewModel = authViewModel
                 )
             }
             composable("dashboard") {
+                val transactions by dashboardViewModel.transactions.collectAsState()
+                val balance by dashboardViewModel.balance.collectAsState()
+                val income by dashboardViewModel.income.collectAsState()
+                val expenses by dashboardViewModel.expenses.collectAsState()
+                val previewTransaction by dashboardViewModel.previewTransaction.collectAsState()
+                
+                LaunchedEffect(Unit) {
+                    dashboardViewModel.fetchData()
+                }
+
                 DashboardScreen(
-                    userName = "Usuário",
-                    balance = 1250.0,
-                    income = 3000.0,
-                    expenses = 1750.0,
-                    transactions = emptyList(),
-                    onSendIA = {}
+                    userName = dashboardViewModel.userEmail?.split("@")?.get(0) ?: "Usuário",
+                    balance = balance,
+                    income = income,
+                    expenses = expenses,
+                    transactions = transactions,
+                    previewTransaction = previewTransaction,
+                    onSendIA = { dashboardViewModel.processIA(it) },
+                    onConfirmTransaction = { 
+                        dashboardViewModel.saveTransaction(it)
+                        dashboardViewModel.clearPreview()
+                    },
+                    onCancelPreview = { dashboardViewModel.clearPreview() },
+                    onLogout = {
+                        dashboardViewModel.logout()
+                        navController.navigate("auth") {
+                            popUpTo(0)
+                        }
+                    }
                 )
             }
             composable("transactions") {
-                TransactionsScreen(onNewTransaction = { navController.navigate("dashboard") })
+                val transactions by dashboardViewModel.transactions.collectAsState()
+                TransactionsScreen(
+                    transactions = transactions,
+                    onNewTransaction = { navController.navigate("dashboard") }
+                )
             }
             composable("cards") {
-                CardsScreen(cards = emptyList(), onAddCard = {})
+                val viewModel: CardsViewModel = koinViewModel()
+                val cards by viewModel.cards.collectAsState()
+                
+                LaunchedEffect(Unit) {
+                    viewModel.fetchCards()
+                }
+
+                CardsScreen(
+                    cards = cards,
+                    onAddCard = { viewModel.addCard(it) }
+                )
             }
             composable("reports") {
                 ReportsScreen(onExportPdf = {})
             }
             composable("goals") {
-                GoalsScreen()
+                val viewModel: GoalsViewModel = koinViewModel()
+                val goals by viewModel.goals.collectAsState()
+                
+                LaunchedEffect(Unit) {
+                    viewModel.fetchGoals()
+                }
+
+                GoalsScreen(goals = goals)
             }
             composable("family") {
                 FamilyScreen()

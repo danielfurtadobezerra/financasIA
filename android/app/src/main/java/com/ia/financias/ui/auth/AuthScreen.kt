@@ -21,13 +21,15 @@ import com.ia.financias.ui.theme.TealPrimary
 
 @Composable
 fun AuthScreen(
-    onLogin: (String, String) -> Unit,
-    onRegister: (String, String, String) -> Unit
+    viewModel: AuthViewModel
 ) {
     var isLogin by remember { mutableStateOf(true) }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     Column(
         modifier = Modifier
@@ -51,6 +53,10 @@ fun AuthScreen(
             modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
         )
 
+        if (error != null) {
+            Text(error!!, color = Color.Red, modifier = Modifier.padding(bottom = 16.dp), fontSize = 12.sp)
+        }
+
         if (!isLogin) {
             OutlinedTextField(
                 value = name,
@@ -58,7 +64,8 @@ fun AuthScreen(
                 label = { Text("Nome completo") },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                enabled = !isLoading
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -69,7 +76,8 @@ fun AuthScreen(
             label = { Text("E-mail") },
             leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -80,22 +88,24 @@ fun AuthScreen(
             label = { Text("Senha") },
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
             onClick = {
-                if (isLogin) onLogin(email, password)
-                else onRegister(name, email, password)
+                if (isLogin) viewModel.login(email, password)
+                else viewModel.register(name, email, password)
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
             contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            enabled = !isLoading
         ) {
             Box(
                 modifier = Modifier
@@ -103,18 +113,23 @@ fun AuthScreen(
                     .background(Brush.linearGradient(PrimaryGradient)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = if (isLogin) "Entrar" else "Cadastrar",
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text(
+                        text = if (isLogin) "Entrar" else "Cadastrar",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 
         TextButton(
             onClick = { isLogin = !isLogin },
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier.padding(top = 16.dp),
+            enabled = !isLoading
         ) {
             Text(
                 text = if (isLogin) "Não tem uma conta? Criar agora" 

@@ -46,17 +46,8 @@ fun CardsScreen(
                 )
             }
 
-            items(listOf(
-                com.ia.financias.data.model.CreditCard(
-                    name = "Nubank",
-                    brand = "Mastercard",
-                    color = "#820AD1",
-                    credit_limit = 5000.0,
-                    closing_day = 5,
-                    due_day = 12
-                )
-            )) { card ->
-                CreditCardItem(card, spent = 1250.0)
+            items(cards) { card ->
+                CreditCardItem(card, spent = 0.0) // Gasto deve ser calculado futuramente
             }
         }
     }
