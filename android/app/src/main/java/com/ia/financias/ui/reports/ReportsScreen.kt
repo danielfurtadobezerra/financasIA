@@ -52,11 +52,18 @@ fun ReportsScreen(
             }
 
             // Exemplo de lista de categorias
-            items(5) {
+            item {
                 CategoryProgressItem(
-                    category = TransactionCategory.alimentacao,
+                    category = TransactionCategory.ALIMENTACAO,
                     spent = 450.0,
                     total = 1000.0
+                )
+            }
+            item {
+                CategoryProgressItem(
+                    category = TransactionCategory.LAZER,
+                    spent = 150.0,
+                    total = 500.0
                 )
             }
         }
@@ -118,7 +125,7 @@ fun CategoryProgressItem(category: TransactionCategory, spent: Double, total: Do
         Spacer(modifier = Modifier.height(8.dp))
         
         LinearProgressIndicator(
-            progress = progress,
+            progress = { progress },
             modifier = Modifier.fillMaxWidth().height(8.dp),
             color = category.color,
             trackColor = category.color.copy(alpha = 0.2f),

@@ -46,8 +46,17 @@ fun CardsScreen(
                 )
             }
 
-            items(cards) { card ->
-                CreditCardItem(card, spent = 1250.0) // Exemplo fixo de gasto
+            items(listOf(
+                com.ia.financias.data.model.CreditCard(
+                    name = "Nubank",
+                    brand = "Mastercard",
+                    color = "#820AD1",
+                    credit_limit = 5000.0,
+                    closing_day = 5,
+                    due_day = 12
+                )
+            )) { card ->
+                CreditCardItem(card, spent = 1250.0)
             }
         }
     }
@@ -93,7 +102,7 @@ fun CreditCardItem(card: CreditCard, spent: Double) {
             Spacer(modifier = Modifier.height(12.dp))
 
             LinearProgressIndicator(
-                progress = usagePercent,
+                progress = { usagePercent },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp),

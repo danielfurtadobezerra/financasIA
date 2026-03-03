@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import java.util.Locale
@@ -31,6 +33,7 @@ fun DashboardScreen(
     onSendIA: (String) -> Unit
 ) {
     var inputText by remember { mutableStateOf("") }
+    var previewTransaction by remember { mutableStateOf<com.ia.financias.data.model.Transaction?>(null) }
 
     Scaffold(
         topBar = {
@@ -53,9 +56,35 @@ fun DashboardScreen(
                     text = inputText,
                     onValueChange = { inputText = it },
                     onSend = { 
-                        onSendIA(inputText)
+                        // Simulação de processamento de IA
+                        previewTransaction = com.ia.financias.data.model.Transaction(
+                            description = inputText,
+                            amount = 50.0,
+                            category = com.ia.financias.data.model.TransactionCategory.ALIMENTACAO,
+                            type = com.ia.financias.data.model.TransactionType.expense,
+                            date = "hoje"
+                        )
                         inputText = ""
                     }
+                )
+            }
+
+            if (previewTransaction != null) {
+                item {
+                    PreviewTransactionCard(
+                        transaction = previewTransaction!!,
+                        onConfirm = {
+                            // Aqui salvaria no Supabase
+                            previewTransaction = null
+                        },
+                        onCancel = { previewTransaction = null }
+                    )
+                }
+            }
+
+            item {
+                InsightsCard(
+                    message = "Você gastou 15% a mais em Alimentação do que no mês passado. Que tal cozinhar em casa hoje?"
                 )
             }
 
@@ -146,6 +175,9 @@ fun AIInputSection(text: String, onValueChange: (String) -> Unit, onSend: () -> 
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             ),
+            leadingIcon = {
+                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = TealPrimary)
+            },
             trailingIcon = {
                 Row(modifier = Modifier.padding(end = 8.dp)) {
                     IconButton(onClick = { /* Voz */ }) {
@@ -191,11 +223,82 @@ fun TransactionItem(transaction: Transaction) {
                 Text(transaction.date, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
             }
 
+            val isExpense = transaction.type == com.ia.financias.data.model.TransactionType.expense
             Text(
-                "${if (transaction.type.name == "expense") "-" else "+"} R$ ${String.format("%.2f", transaction.amount)}",
-                color = if (transaction.type.name == "expense") ExpenseRed else IncomeGreen,
+                "${if (isExpense) "-" else "+"} R$ ${String.format("%.2f", transaction.amount)}",
+                color = if (isExpense) ExpenseRed else IncomeGreen,
                 fontWeight = FontWeight.Bold
             )
+        }
+    }
+}
+
+@Composable
+fun PreviewTransactionCard(
+    transaction: com.ia.financias.data.model.Transaction,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+        border = androidx.compose.foundation.BorderStroke(1.dp, TealPrimary.copy(alpha = 0.5f))
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = TealPrimary)
+                Text(
+                    "Confirmar Lançamento", 
+                    modifier = Modifier.padding(start = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    color = TealPrimary
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            OutlinedTextField(
+                value = transaction.description,
+                onValueChange = {}, // Editável no futuro
+                label = { Text("Descrição") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            Row(modifier = Modifier.padding(top = 12.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = "R$ ${transaction.amount}",
+                    onValueChange = {},
+                    label = { Text("Valor") },
+                    modifier = Modifier.weight(1f)
+                )
+                OutlinedTextField(
+                    value = transaction.category.label,
+                    onValueChange = {},
+                    label = { Text("Categoria") },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedButton(
+                    onClick = onCancel,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Cancelar", color = ExpenseRed)
+                }
+                Button(
+                    onClick = onConfirm,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = TealPrimary),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Confirmar")
+                }
+            }
         }
     }
 }
@@ -214,5 +317,28 @@ fun DashboardHeader(userName: String) {
             Text(userName, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         }
         // Ícone de Perfil/Logout
+    }
+}
+
+@Composable
+fun InsightsCard(message: String) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = WarningYellow.copy(alpha = 0.1f),
+        border = androidx.compose.foundation.BorderStroke(1.dp, WarningYellow.copy(alpha = 0.3f))
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(Icons.Default.Lightbulb, contentDescription = null, tint = WarningYellow)
+            Text(
+                text = message,
+                modifier = Modifier.padding(start = 12.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = TextPrimaryLight
+            )
+        }
     }
 }
