@@ -14,4 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "FinanciasIA"
 include(":app")
- lands.lands"
