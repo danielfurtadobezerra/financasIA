@@ -1,0 +1,9 @@
+node_modules/
+.supabase/
+.temp/
+*.log
+.DS_Store
+dist/
+build/
+bin/
+obj/
