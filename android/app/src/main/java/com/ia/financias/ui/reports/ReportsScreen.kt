@@ -24,7 +24,7 @@ fun ReportsScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onExportPdf, containerColor = TealPrimary) {
-                Icon(Icons.Default.FileDownload, contentDescription = null, color = Color.White)
+                Icon(Icons.Default.FileDownload, contentDescription = null, tint = Color.White)
             }
         }
     ) { padding ->

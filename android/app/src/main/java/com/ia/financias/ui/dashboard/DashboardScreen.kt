@@ -140,7 +140,7 @@ fun AIInputSection(text: String, onValueChange: (String) -> Unit, onSend: () -> 
             placeholder = { Text("Paguei 50 reais de almoço hoje...") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = TextFieldDefaults.textFieldColors(
+            colors = TextFieldDefaults.colors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
@@ -148,10 +148,10 @@ fun AIInputSection(text: String, onValueChange: (String) -> Unit, onSend: () -> 
             trailingIcon = {
                 Row(modifier = Modifier.padding(end = 8.dp)) {
                     IconButton(onClick = { /* Voz */ }) {
-                        Icon(Icons.Default.Mic, contentDescription = null, color = ExpenseRed)
+                        Icon(Icons.Default.Mic, contentDescription = null, tint = ExpenseRed)
                     }
                     IconButton(onClick = onSend) {
-                        Icon(Icons.Default.Send, contentDescription = null, color = TealPrimary)
+                        Icon(Icons.Default.Send, contentDescription = null, tint = TealPrimary)
                     }
                 }
             }
