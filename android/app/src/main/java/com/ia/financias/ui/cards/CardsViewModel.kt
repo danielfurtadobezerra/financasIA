@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ia.financias.data.model.CreditCard
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -36,7 +37,9 @@ class CardsViewModel(private val supabase: SupabaseClient) : ViewModel() {
     fun addCard(card: CreditCard) {
         viewModelScope.launch {
             try {
-                supabase.postgrest["credit_cards"].insert(card)
+                val userId = supabase.auth.currentSessionOrNull()?.user?.id
+                val cardWithUser = card.copy(user_id = userId)
+                supabase.postgrest["credit_cards"].insert(cardWithUser)
                 fetchCards()
             } catch (e: Exception) {
                 e.printStackTrace()

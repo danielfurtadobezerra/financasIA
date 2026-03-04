@@ -97,7 +97,10 @@ class DashboardViewModel(private val supabase: SupabaseClient) : ViewModel() {
     fun saveTransaction(transaction: Transaction) {
         viewModelScope.launch {
             try {
-                supabase.postgrest["transactions"].insert(transaction)
+                val userId = supabase.auth.currentSessionOrNull()?.user?.id
+                val transactionWithUser = transaction.copy(user_id = userId)
+                
+                supabase.postgrest["transactions"].insert(transactionWithUser)
                 fetchData()
             } catch (e: Exception) {
                 e.printStackTrace()
