@@ -16,7 +16,7 @@ val appModule = module {
     single {
         createSupabaseClient(
             supabaseUrl = "https://lkqjehgrcevxildhpyhw.supabase.co",
-            supabaseKey = "sb_publishable_-r29lHJy3s4bdQBNd86W7w_EmRj2fXP"
+            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWplaGdyY2V2eGlsZGhweWh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NTY5MTQsImV4cCI6MjA4ODEzMjkxNH0.Awulrj7-hUoV7zOlxd8b3vBuIo0jTOXjAbIHW4jc-kA"
         ) {
             install(Auth)
             install(Postgrest)
