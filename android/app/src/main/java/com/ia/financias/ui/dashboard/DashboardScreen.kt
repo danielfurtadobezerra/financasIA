@@ -23,6 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ia.financias.data.model.Transaction
 import com.ia.financias.ui.theme.*
+import org.koin.compose.koinInject
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun DashboardScreen(
@@ -38,6 +45,24 @@ fun DashboardScreen(
     onLogout: () -> Unit
 ) {
     var inputText by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val voiceParser = koinInject<VoiceToTextParser>()
+    val voiceState by voiceParser.state.collectAsState()
+
+    // Atualiza o texto quando o reconhecimento termina
+    LaunchedEffect(voiceState.spokenText) {
+        if (voiceState.spokenText.isNotEmpty()) {
+            inputText = voiceState.spokenText
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            voiceParser.startListening()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -62,6 +87,19 @@ fun DashboardScreen(
                     onSend = { 
                         onSendIA(inputText)
                         inputText = ""
+                    },
+                    isRecording = voiceState.isSpeaking,
+                    onRecordClick = {
+                        if (voiceState.isSpeaking) {
+                            voiceParser.stopListening()
+                        } else {
+                            val permission = Manifest.permission.RECORD_AUDIO
+                            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                voiceParser.startListening()
+                            } else {
+                                permissionLauncher.launch(permission)
+                            }
+                        }
                     }
                 )
             }
@@ -155,7 +193,13 @@ fun SummarySmallCard(label: String, value: Double, color: Color, modifier: Modif
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AIInputSection(text: String, onValueChange: (String) -> Unit, onSend: () -> Unit) {
+fun AIInputSection(
+    text: String,
+    onValueChange: (String) -> Unit,
+    onSend: () -> Unit,
+    isRecording: Boolean,
+    onRecordClick: () -> Unit
+) {
     Column {
         TextField(
             value = text,
@@ -174,8 +218,12 @@ fun AIInputSection(text: String, onValueChange: (String) -> Unit, onSend: () -> 
             },
             trailingIcon = {
                 Row(modifier = Modifier.padding(end = 8.dp)) {
-                    IconButton(onClick = { /* Voz */ }) {
-                        Icon(Icons.Default.Mic, contentDescription = null, tint = ExpenseRed)
+                    IconButton(onClick = onRecordClick) {
+                        Icon(
+                            imageVector = Icons.Default.Mic, 
+                            contentDescription = "Voz", 
+                            tint = if (isRecording) Color(0xFF22C55E) else ExpenseRed
+                        )
                     }
                     IconButton(onClick = onSend) {
                         Icon(Icons.Default.Send, contentDescription = null, tint = TealPrimary)
@@ -184,7 +232,8 @@ fun AIInputSection(text: String, onValueChange: (String) -> Unit, onSend: () -> 
             }
         )
         Text(
-            "💡 Dica: Clique no microfone ou digite algo como 'Gastei 89 no iFood ontem'",
+            if (isRecording) "🎤 Ouvindo seu comando..." 
+            else "💡 Dica: Clique no microfone ou digite algo como 'Gastei 89 no iFood ontem'",
             style = MaterialTheme.typography.labelSmall,
             color = Color.Gray,
             modifier = Modifier.padding(top = 8.dp, start = 4.dp)

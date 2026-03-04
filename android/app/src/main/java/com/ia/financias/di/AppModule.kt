@@ -11,6 +11,8 @@ import com.ia.financias.ui.auth.AuthViewModel
 import com.ia.financias.ui.dashboard.DashboardViewModel
 import com.ia.financias.ui.cards.CardsViewModel
 import com.ia.financias.ui.goals.GoalsViewModel
+import com.ia.financias.ui.dashboard.VoiceToTextParser
+import org.koin.android.ext.koin.androidApplication
 
 val appModule = module {
     single {
@@ -24,7 +26,9 @@ val appModule = module {
             install(Realtime)
         }
     }
-
+    
+    single { VoiceToTextParser(androidApplication()) }
+ 
     viewModel { AuthViewModel(get()) }
     viewModel { DashboardViewModel(get()) }
     viewModel { CardsViewModel(get()) }
