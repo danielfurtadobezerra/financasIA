@@ -50,7 +50,7 @@ data class Transaction(
     val date: String,
     val payment_method: PaymentMethod? = null,
     val credit_card_id: String? = null,
-    val installments: Int? = null,
+    @kotlinx.serialization.Transient val installments: Int? = null,
     val created_at: String? = null
 )
 

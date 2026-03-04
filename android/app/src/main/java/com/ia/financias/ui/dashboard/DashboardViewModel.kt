@@ -1,6 +1,7 @@
 package com.ia.financias.ui.dashboard
 
 import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ia.financias.data.model.Transaction
 import com.ia.financias.data.model.TransactionType
@@ -35,14 +36,15 @@ class DashboardViewModel(private val supabase: SupabaseClient) : ViewModel() {
                 val parsed = Json.decodeFromString<Transaction>(response.bodyAsText())
                 _previewTransaction.value = parsed
             } catch (e: Exception) {
+                Log.e("DashboardVM", "Erro no processIA", e)
                 e.printStackTrace()
                 // Fallback local simples se a IA falhar
                 _previewTransaction.value = Transaction(
                     description = text,
-                    amount = 0.0,
+                    amount = 1.0,
                     category = com.ia.financias.data.model.TransactionCategory.OUTROS,
                     type = TransactionType.expense,
-                    date = "2026-03-03"
+                    date = java.time.LocalDate.now().toString()
                 )
             } finally {
                 _isLoading.value = false
@@ -79,6 +81,7 @@ class DashboardViewModel(private val supabase: SupabaseClient) : ViewModel() {
                 _transactions.value = response.sortedByDescending { it.date }
                 calculateTotals(response)
             } catch (e: Exception) {
+                Log.e("DashboardVM", "Erro no fetchData", e)
                 e.printStackTrace()
             } finally {
                 _isLoading.value = false
@@ -103,6 +106,7 @@ class DashboardViewModel(private val supabase: SupabaseClient) : ViewModel() {
                 supabase.postgrest["transactions"].insert(transactionWithUser)
                 fetchData()
             } catch (e: Exception) {
+                Log.e("DashboardVM", "Erro no saveTransaction", e)
                 e.printStackTrace()
             }
         }
